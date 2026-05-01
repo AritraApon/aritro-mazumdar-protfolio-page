@@ -2,32 +2,37 @@
 
 import { motion } from "framer-motion";
 import MagneticButton from "./MagneticButton";
-
 import React, { useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import { toast } from "react-toastify";
 
 export default function Contact() {
-const form = useRef();
+  const form = useRef();
 
   const sendEmail = (e) => {
     e.preventDefault();
 
+    // Environment variables গুলো ঠিকঠাক আছে কি না নিশ্চিত করুন
     emailjs
-      .sendForm(process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID, process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID , form.current, {
-        publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
-      })
+      .sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        form.current,
+        {
+          publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,
+        }
+      )
       .then(
         () => {
-          toast.success('SUCCESS!');
+          toast.success('Message sent successfully!');
+          e.target.reset(); // ইমেইল চলে গেলে ফর্মটি খালি হয়ে যাবে
         },
         (error) => {
-          toast.error('FAILED...', error.text);
+          console.error('EmailJS Error:', error);
+          toast.error(`Failed to send: ${error.text}`);
         },
       );
   };
-
-
 
   return (
     <section id="contact" className="py-20 md:py-32">
@@ -45,7 +50,7 @@ const form = useRef();
               Let's build<br className="hidden md:block" />something great.
             </h2>
             <div className="space-y-6 md:space-y-8 max-w-md mx-auto lg:mx-0">
-              <ContactInfoItem icon="mail" label="Email" value="aritroaritromazumdar8@gmail.com" />
+              <ContactInfoItem icon="mail" label="Email" value="aritromazumdar8@gmail.com" />
               <ContactInfoItem icon="call" label="Phone" value="+8801812788042" />
               <ContactInfoItem icon="location_on" label="Location" value="Rangpur/ Bangladesh" />
             </div>
@@ -56,16 +61,18 @@ const form = useRef();
               <div className="space-y-2">
                 <label className="font-h3 text-on-surface-variant text-xs uppercase tracking-wider">Full Name</label>
                 <input
+                  required
                   className="w-full bg-[#0D1117] border border-white/10 rounded-xl px-6 py-4 focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all"
                   placeholder="Your Name"
                   type="text"
-                  name="name"
+                  name="name" // EmailJS Template এ {{name}} হিসেবে ব্যবহার করবেন
                 />
               </div>
               <div className="space-y-2">
                 <label className="font-h3 text-on-surface-variant text-xs uppercase tracking-wider">Email Address</label>
                 <input
-                name="reply_to"
+                  required
+                  name="reply_to" // EmailJS Template এ {{reply_to}} হিসেবে ব্যবহার করবেন
                   className="w-full bg-[#0D1117] border border-white/10 rounded-xl px-6 py-4 focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all"
                   placeholder="email@gmail.com"
                   type="email"
@@ -73,8 +80,10 @@ const form = useRef();
               </div>
             </div>
             <div className="space-y-2">
-              <label className="font-h3 text-on-surface-variant text-xs uppercase tracking-wider">Subject</label>
+              <label  className="font-h3 text-on-surface-variant text-xs uppercase tracking-wider">Subject</label>
               <input
+                required
+                name="title" // এখানে name ছিল না, এটি যোগ করা হয়েছে
                 className="w-full bg-[#0D1117] border border-white/10 rounded-xl px-6 py-4 focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all"
                 placeholder="Project Inquiry"
                 type="text"
@@ -83,7 +92,8 @@ const form = useRef();
             <div className="space-y-2">
               <label className="font-h3 text-on-surface-variant text-xs uppercase tracking-wider">Message</label>
               <textarea
-              name="message"
+                required
+                name="message" // EmailJS Template এ {{message}} হিসেবে ব্যবহার করবেন
                 className="w-full bg-[#0D1117] border border-white/10 rounded-xl px-6 py-4 focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all"
                 placeholder="Tell me about your project..."
                 rows="4"
