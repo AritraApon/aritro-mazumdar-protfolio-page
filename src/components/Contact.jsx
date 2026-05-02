@@ -28,8 +28,8 @@ export default function Contact() {
           e.target.reset(); // ইমেইল চলে গেলে ফর্মটি খালি হয়ে যাবে
         },
         (error) => {
-          console.error('EmailJS Error:', error);
-          toast.error(`Failed to send: ${error.text}`);
+          // console.error('EmailJS Error:', error);
+          toast.error(`Failed to send`);
         },
       );
   };
